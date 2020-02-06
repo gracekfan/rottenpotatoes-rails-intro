@@ -12,8 +12,8 @@ class MoviesController < ApplicationController
 
   def index
     @movies = Movie.all
-    @all_ratings = Movie.all_ratings
-    
+    @all_ratings = @checked_ratings = Movie.all_ratings
+  
     if params[:ratings].present?
       if !session[:ratings].present?
         session[:ratings] = @all_ratings
@@ -26,9 +26,11 @@ class MoviesController < ApplicationController
     else
       session[:ratings] = params[:ratings]
     end
-    
-    @checked_ratings = params[:ratings].keys
-    @movies = Movie.with_ratings(@checked_ratings)
+
+    if params[:ratings].present?
+      @checked_ratings = params[:ratings].keys
+      @movies = Movie.with_ratings(@checked_ratings)
+    end
 
     if !params[:order_by].present?
       if session[:order_by].present?
