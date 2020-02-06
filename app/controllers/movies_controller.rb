@@ -13,11 +13,11 @@ class MoviesController < ApplicationController
   def index
     @movies = Movie.all
     @all_ratings = Movie.all_ratings
-  
+    
     if params[:ratings].present?
       @checked_ratings = params[:ratings].keys
-      session[:ratings] = params[:ratings]
       @movies = Movie.with_ratings(@checked_ratings)
+      session[:ratings] = params[:ratings]
     elsif session[:ratings].present?
       params[:ratings] = session[:ratings]
       flash.keep
@@ -26,20 +26,20 @@ class MoviesController < ApplicationController
       session[:ratings] = params[:ratings]
     end
 
-    if params[:order_by].present?
-      session[:order_by] = params[:order_by]
-    elsif session[:order_by].present?
-      params[:order_by] = session[:order_by]
-      flash.keep
-      redirect_to(movies_path(params)) && return
+    if !params[:order_by].present?
+      if session[:order_by].present?
+        params[:order_by] = session[:order_by]
+        flash.keep
+        redirect_to(movies_path(params)) && return
+      end
     else
-      session[:ratings] = params[:ratings]
+      session[:order_by] = params[:order_by]
     end
 
     if params[:order_by] == "title"
-      @movies = Movie.order("title")
+      @movies = @movies.order("title")
     elsif params[:order_by] == "release_date"
-      @movies = Movie.order("release_date")
+      @movies = @movies.order("release_date")
     end
   end
 
