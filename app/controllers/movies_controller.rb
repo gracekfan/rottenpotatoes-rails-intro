@@ -16,7 +16,24 @@ class MoviesController < ApplicationController
   
     if params[:ratings].present?
       @checked_ratings = params[:ratings].keys
+      session[:ratings] = params[:ratings]
       @movies = Movie.with_ratings(@checked_ratings)
+    elsif session[:ratings].present?
+      params[:ratings] = session[:ratings]
+      flash.keep
+      redirect_to(movies_path(params)) && return
+    else
+      session[:ratings] = params[:ratings]
+    end
+
+    if params[:order_by].present?
+      session[:order_by] = params[:order_by]
+    elsif session[:order_by].present?
+      params[:order_by] = session[:order_by]
+      flash.keep
+      redirect_to(movies_path(params)) && return
+    else
+      session[:ratings] = params[:ratings]
     end
 
     if params[:order_by] == "title"
