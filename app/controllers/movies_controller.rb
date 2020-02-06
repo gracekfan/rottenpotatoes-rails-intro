@@ -15,6 +15,9 @@ class MoviesController < ApplicationController
     @all_ratings = Movie.all_ratings
     
     if params[:ratings].present?
+      if !session[:ratings].present?
+        session[:ratings] = @all_ratings
+      end
       @checked_ratings = params[:ratings].keys
       @movies = Movie.with_ratings(@checked_ratings)
       session[:ratings] = params[:ratings]
